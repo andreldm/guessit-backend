@@ -1,10 +1,10 @@
 module.exports = function(){
   let cards = [];
   // mock cards
-  for (let i = 1; i <= 84; i++)
-    cards.push({id: i, name: 'card' + i});
+  for (let i = 1; i <= 80; i++)
+    cards.push({id: i, name: 'card' + i, url: `dist/find-me/dash-card/assets/img/card-${i}.jpg`});
 
-  let available = [...Array(cards.length).keys()];
+  let available = cards.slice();
   let used = [];
 
   return {

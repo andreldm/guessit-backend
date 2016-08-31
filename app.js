@@ -1,12 +1,16 @@
-var app = require('express')();
+var express = require('express');
 var http = require('http');
 var socketio = require('socket.io');
 var rcolor = require('./rcolor');
+var cards = require('./cards');
 
+var app = express();
 var server =  http.Server(app);
 var io = socketio(server);
 
 var players = new Map();
+
+app.use(express.static('public'));
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/public/index.html');
@@ -16,7 +20,14 @@ io.on('connection', function(socket){
   socket.on('join', function(playerName) {
     let player = players.get(socket.id);
     if (!player) {
-      player = {id: socket.id, name: playerName, color: rcolor(), score: 0}
+      player = {
+        id: socket.id,
+        name: playerName,
+        color: rcolor(),
+        score: 0,
+        deck: cards.getDeck()
+      }
+      console.log(player.deck);
       players.set(socket.id, player);
     }
 
