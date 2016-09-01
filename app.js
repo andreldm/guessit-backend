@@ -8,7 +8,10 @@ var app = express();
 var server =  http.Server(app);
 var io = socketio(server);
 
-var players = new Map();
+var state = {
+  players: new Map(),
+  turnPlayer: undefined
+}
 
 app.use(express.static('public'));
 
@@ -18,7 +21,8 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
   socket.on('join', function(playerName) {
-    let player = players.get(socket.id);
+    let player = state.players.get(socket.id);
+
     if (!player) {
       player = {
         id: socket.id,
@@ -27,16 +31,25 @@ io.on('connection', function(socket){
         score: 0,
         deck: cards.getDeck()
       }
-      console.log(player.deck);
-      players.set(socket.id, player);
+
+      state.players.set(socket.id, player);
     }
 
-    io.emit('update-players', Array.from(players.values()));
+    io.emit('update-players', Array.from(state.players.values()));
+
+    if (state.players.size == 3) {
+      io.emit('start-game');
+
+      state.turnPlayer = state.players.entries();
+      let player = state.turnPlayer.next();
+      io.sockets.socket(player.id).emit('your-turn');
+
+    }
   });
 
   socket.on('disconnect', function () {
-    players.delete(socket.id);
-    io.emit('update-players', Array.from(players.values()));
+    state.players.delete(socket.id);
+    io.emit('update-players', Array.from(state.players.values()));
   });
 });
 
