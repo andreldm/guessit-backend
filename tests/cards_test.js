@@ -1,4 +1,4 @@
-let cards = require('./cards.js');
+let cards = require('../cards.js');
 
 let deck = cards.getDeck();
 console.log(deck);

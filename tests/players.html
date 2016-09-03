@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Players Test</title>
+  </head>
+  <body>
+    <input id="name" type="text" name="name" value=""/>
+    <button type="button" name="button" onclick="join()">Join</button>
+
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+      var socket = io('http://localhost:3000');
+
+      function join() {
+        var name = $('#name').val();
+        socket.emit('join', name);
+      }
+
+      socket.on('update-players', function(players) {
+        console.log('update-players', JSON.stringify(players));
+      });
+
+      socket.on('confirm-join', function(player) {
+        console.log('confirm-join', JSON.stringify(player));
+      });
+
+      socket.on('pick-card', function() {
+        console.log('pick-card');
+      });
+    </script>
+  </body>
+</html>
