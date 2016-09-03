@@ -20,7 +20,7 @@ module.exports = function(){
       return deck;
     },
 
-    getCard: function(usedCard) {
+    exchangeCard: function(usedCard) {
       let index = Math.floor(Math.random() * (available.length - 6));
       let newCard = available[index];
       available.splice(index, 1);
@@ -32,4 +32,8 @@ module.exports = function(){
 
       return newCard;
     },
+
+    getCard: function(cardId) {
+      return cards[cardId - 1];
+    }
 }}();
