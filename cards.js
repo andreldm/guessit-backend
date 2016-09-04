@@ -1,19 +1,15 @@
-var fs = require('fs');
+let fs = require('fs');
 
 module.exports = function(){
   let cards = [];
 
-  var files = fs.readdirSync('public/cards')
-  let index = 0;
+  let files = fs.readdirSync('public/cards')
   for (f of files) {
     if (/^card-\d+\.jpg$/.test(f)) {
-        cards.push({id: ++index, name: 'card' + index, url: `cards/${f}`});
-    } else {
-      console.log(f);
+        let index = /^card-(\d+)\.jpg$/.exec(f)[1];
+        cards.push({id: index, name: 'card' + index, url: `cards/${f}`});
     }
   }
-  // for (let i = 1; i <= 108; i++)
-  //   cards.push({id: i, name: 'card' + i, url: `cards/card-${i}.jpg`});
 
   let available = cards.slice();
   let used = [];
