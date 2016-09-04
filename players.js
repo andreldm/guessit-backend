@@ -78,8 +78,14 @@ module.exports = function(){
       // Check if no one is left to picking cards
       let left = playersArray.filter(p => !p.pickedCard).length;
       if (left === 0) {
-        let selectedCards = playersArray.map(p => cards.getCard(p.pickedCard));
-        io.emit('allow-pick-bet', _.shuffle(selectedCards));
+        let pickedCards = playersArray.map(p => cards.getCard(p.pickedCard));
+
+        for (p of playersArray) {
+          if (p.id !== turnPlayer.id) {
+            io.to(p.id).emit('allow-pick-bet', _.shuffle(pickedCards));
+          }
+        }
+
         console.log("Everybody is now picking bets");
       }
     },
@@ -93,7 +99,7 @@ module.exports = function(){
       let playersArray = Array.from(players.values());
 
       let left = playersArray.filter(p => !p.pickedBet).length;
-      if (left === 0) {
+      if (left === 1) { // 1 because the turnPlayer doesn't pick a bet
         console.log("Processing results...");
       }
     },
