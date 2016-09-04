@@ -11,6 +11,7 @@
     <button onclick="join()">Join</button>
     <div id="cards"></div>
     <div id="bets"></div>
+    <ul id="players"></ul>
 
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
@@ -39,6 +40,12 @@
 
       socket.on('update-all', function(players) {
         console.log('update-all', JSON.stringify(players));
+
+        $("#players").empty();
+        for (p of players) {
+          var i = $('<li>' + p.name + ': ' + p.score + '</li>');
+          $("#players").append(i);
+        }
       });
 
       socket.on('update', function(player) {

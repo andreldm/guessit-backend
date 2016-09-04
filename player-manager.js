@@ -3,14 +3,14 @@ let rcolor = require('./rcolor');
 class PlayerManager {
   constructor(cardManager) {
     this._players = new Map();
-    this._turnPlayer = undefined;
+    this._storyteller = undefined;
     this.cardManager = cardManager;
   }
 
   get players() { return this._players; }
   set players(players) { this._players = players; }
-  get turnPlayer() { return this._turnPlayer; }
-  set turnPlayer(player) { this._turnPlayer = player; }
+  get storyteller() { return this._storyteller; }
+  set storyteller(player) { this._storyteller = player; }
 
   handleJoin (io, socket, playerName) {
     if (!playerName || !playerName.trim()) {
@@ -44,8 +44,8 @@ class PlayerManager {
 
     io.to(player.id).emit('update', player);
 
-    if (!this.turnPlayer || this.turnPlayer.name === player.name) {
-      this.turnPlayer = player;
+    if (!this.storyteller || this.storyteller.name === player.name) {
+      this.storyteller = player;
       io.to(player.id).emit('allow-pick-card');
       console.log(`${playerName} is now picking a card`);
     }
