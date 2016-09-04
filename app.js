@@ -8,6 +8,8 @@ var app = express();
 var server =  http.Server(app);
 var io = socketio(server);
 
+app.use(express.static('public'));
+
 io.on('connection', function(socket){
   socket.on('join', function(playerName) { players.handleJoin(io, socket, playerName); });
   socket.on('disconnect', function () { players.handleDisconnect(io, socket); });
