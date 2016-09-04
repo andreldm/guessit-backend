@@ -3,11 +3,11 @@ let fs = require('fs');
 module.exports = function(){
   let cards = [];
 
-  let files = fs.readdirSync('public/cards')
+  let files = fs.readdirSync('public/cards');
+  let cardId = 0;
   for (f of files) {
     if (/^card-\d+\.jpg$/.test(f)) {
-        let index = /^card-(\d+)\.jpg$/.exec(f)[1];
-        cards.push({id: index, name: 'card' + index, url: `cards/${f}`});
+        cards.push({id: ++cardId, url: `cards/${f}`});
     }
   }
 
