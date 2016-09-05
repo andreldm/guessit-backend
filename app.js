@@ -15,6 +15,14 @@ let turnManager = new TurnManager(cardManager, playerManager);
 
 app.use(express.static('public'));
 
+app.get('/reset', function (req, res) {
+  console.log("Resetting...");
+  cardManager.reset();
+  playerManager.reset();
+  turnManager.reset();
+  res.send("reset done!");
+});
+
 io.on('connection', function(socket){
   socket.on('join', function(playerName) { playerManager.handleJoin(io, socket, playerName); });
   socket.on('disconnect', function () { playerManager.handleDisconnect(io, socket); });

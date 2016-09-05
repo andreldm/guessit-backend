@@ -1,5 +1,4 @@
 let _ = require('lodash');
-let CardManager = require('./card-manager');
 
 class TurnManager {
   constructor(cardManager, playerManager) {
@@ -83,6 +82,10 @@ class TurnManager {
       for (let p of winners)
         p.score +=3;
     }
+  }
+
+  reset() {
+    // nothing to reset
   }
 }
 

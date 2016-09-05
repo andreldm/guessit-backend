@@ -62,6 +62,11 @@ class PlayerManager {
       return {name: p.name, color: p.color, score: p.score}
     }));
   }
+
+  reset() {
+    this.players = new Map();
+    this.storyteller = undefined;
+  }
 }
 
 module.exports = PlayerManager;

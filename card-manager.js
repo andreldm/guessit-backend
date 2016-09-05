@@ -46,6 +46,11 @@ class CardManager {
   getCard(cardId) {
     return this.cards[cardId - 1];
   }
+
+  reset() {
+    this.available = this.cards.slice();
+    this.used = [];
+  }
 }
 
 module.exports = CardManager;
