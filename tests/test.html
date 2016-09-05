@@ -52,6 +52,7 @@
         console.log('update', JSON.stringify(player));
         deck = player.deck;
 
+        $("#bets").empty();
         $("#cards").empty();
         for (card of deck) {
           var b = $('<button disabled="disabled" onclick="select(' + card.id + ')">' + card.id + '</button>');
