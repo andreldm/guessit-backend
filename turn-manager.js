@@ -81,7 +81,9 @@ class TurnManager {
     }
 
     if (winners.length > 0) {
-      storyteller.score += 3;
+      // If everybord has won, the storyteller doesn't score
+      if (winners.length < (players.length - 1))
+        storyteller.score += 3;
 
       for (let p of winners)
         p.score +=3;
