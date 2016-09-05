@@ -76,7 +76,8 @@ class TurnManager {
       if (!p2) continue;
 
       if (p2 === storyteller) winners.push(p1);
-      else p2.score++;
+      // ignore voting on own card
+      else if (p1.id !== p2.id) p2.score++;
     }
 
     if (winners.length > 0) {
