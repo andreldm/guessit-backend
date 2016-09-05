@@ -10,7 +10,7 @@ class TurnManager {
     let player = this.playerManager.players.get(socket.id);
     player.pickedCard = cardId;
 
-    let playersArray = Array.from(this.playerManager.players.values());
+    let players = Array.from(this.playerManager.players.values());
 
     console.log(`${player.name} has picked card ${cardId}`);
 
@@ -18,18 +18,18 @@ class TurnManager {
     if (this.playerManager.storyteller.id === player.id) {
       console.log("Allow other players to pick cards");
 
-      for (let p of playersArray) {
+      for (let p of players) {
         if (p.id === player.id) continue;
         io.to(p.id).emit('allow-pick-card');
       }
     }
 
     // Check if no one is left to picking cards
-    let left = playersArray.filter(p => !p.pickedCard).length;
+    let left = players.filter(p => !p.pickedCard).length;
     if (left === 0) {
-      let pickedCards = playersArray.map(p => this.cardManager.getCard(p.pickedCard));
+      let pickedCards = players.map(p => this.cardManager.getCard(p.pickedCard));
 
-      for (let p of playersArray) {
+      for (let p of players) {
         if (p.id !== this.playerManager.storyteller.id) {
           io.to(p.id).emit('allow-pick-bet', _.shuffle(pickedCards));
         }
@@ -45,9 +45,9 @@ class TurnManager {
     console.log(`${player.name} has picked bet ${cardId}`);
 
     // Check if no one is left picking bets
-    let playersArray = Array.from(this.playerManager.players.values());
+    let players = Array.from(this.playerManager.players.values());
 
-    let left = playersArray.filter(p => !p.pickedBet).length;
+    let left = players.filter(p => !p.pickedBet).length;
     if (left === 1) { // 1 because the storyteller doesn't pick a bet
       console.log("Processing results...");
       this.processBets();
@@ -55,6 +55,9 @@ class TurnManager {
       .map(p => {
         return {name: p.name, color: p.color, score: p.score}
       }));
+
+      // pick next storyteller
+      this.playerManager.nextStoryteller(io);
     }
   }
 

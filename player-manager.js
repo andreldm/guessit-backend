@@ -63,6 +63,35 @@ class PlayerManager {
     }));
   }
 
+  nextStoryteller(io) {
+    let newStoryteller = undefined;
+    let storyteller = this.storyteller;
+    let players = Array.from(this.players.values());
+
+    for (let i = 0; i < players.length; i++) {
+      let p = players[i];
+
+      // Exchange the used card
+      let newCard = this.cardManager.getDeck(p.pickedCard);
+      p.deck[p.deck.indexOf(p.pickedCard)] = newCard;
+
+      // Clear picks
+      p.pickedCard = undefined;
+      p.pickedBet = undefined;
+
+      // If this player is the storyteller, pick the next one
+      if (p === storyteller) {
+        newStoryteller = (i === players.length - 1) ?
+          players[0] : players[i + 1];
+      }
+
+      io.to(p.id).emit('update', p);
+    }
+
+    this.storyteller = newStoryteller;
+    io.to(this.storyteller.id).emit('allow-pick-card');
+  }
+
   reset() {
     this.players = new Map();
     this.storyteller = undefined;
