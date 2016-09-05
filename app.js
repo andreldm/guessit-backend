@@ -13,6 +13,7 @@ let cardManager = new CardManager();
 let playerManager = new PlayerManager(cardManager);
 let turnManager = new TurnManager(cardManager, playerManager);
 
+app.set('port', process.env.PORT || 3000);
 app.use(express.static('public'));
 
 app.get('/reset', function (req, res) {
@@ -30,6 +31,6 @@ io.on('connection', function(socket){
   socket.on('pick-bet', function(cardId) { turnManager.handlePickBet(io, socket, cardId); });
 });
 
-server.listen(3000, function() {
-  console.log('listening on :3000');
+server.listen(app.get('port'), function() {
+  console.log(`listening on :${app.get('port')}`);
 });
