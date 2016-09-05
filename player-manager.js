@@ -1,4 +1,5 @@
 let rcolor = require('./rcolor');
+let _ = require('lodash');
 
 class PlayerManager {
   constructor(cardManager) {
@@ -72,8 +73,8 @@ class PlayerManager {
       let p = players[i];
 
       // Exchange the used card
-      let newCard = this.cardManager.getDeck(p.pickedCard);
-      p.deck[p.deck.indexOf(p.pickedCard)] = newCard;
+      let newCard = this.cardManager.exchangeCard(p.pickedCard);
+      p.deck[_.findIndex(p.deck, {'id': p.pickedCard})] = newCard;
 
       // Clear picks
       p.pickedCard = undefined;
