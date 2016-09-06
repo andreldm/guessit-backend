@@ -80,11 +80,18 @@ class TurnManager {
       else if (p1.id !== p2.id) p2.score++;
     }
 
-    if (winners.length > 0) {
-      // If everybord has won, the storyteller doesn't score
-      if (winners.length < (players.length - 1))
-        storyteller.score += 3;
-
+    /*
+     * If nobody or everybody finds the correct picture, the storyteller scores
+     * 0, and each of the other players scores 2. Otherwise the storyteller and
+     * all players who found the correct answer score 3
+     */
+    if (winners.length === 0 || winners.length === (players.length - 1)) {
+      for (let p of players) {
+        if (p === storyteller) continue;
+        p.score += 2;
+      }
+    } else {
+      storyteller.score += 3;
       for (let p of winners)
         p.score +=3;
     }
