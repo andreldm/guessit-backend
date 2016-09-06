@@ -53,7 +53,7 @@ class TurnManager {
       this.processBets();
       io.emit('update-all', Array.from(this.playerManager.players.values())
       .map(p => {
-        return {p: p.id, name: p.name, color: p.color, score: p.score}
+        return {id: p.id, name: p.name, color: p.color, score: p.score}
       }));
 
       // pick next storyteller

@@ -40,7 +40,7 @@ class PlayerManager {
     console.log(`${playerName} has joined`);
 
     io.emit('update-all', Array.from(this.players.values()).map(p => {
-      return {p: p.id, name: p.name, color: p.color, score: p.score}
+      return {id: p.id, name: p.name, color: p.color, score: p.score}
     }));
 
     io.to(player.id).emit('update', player);
@@ -60,7 +60,7 @@ class PlayerManager {
     }
 
     io.emit('update-all', Array.from(this.players.values()).map(p => {
-      return {p: p.id, name: p.name, color: p.color, score: p.score}
+      return {id: p.id, name: p.name, color: p.color, score: p.score}
     }));
   }
 
