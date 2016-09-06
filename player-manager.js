@@ -81,7 +81,7 @@ class PlayerManager {
       p.pickedBet = undefined;
 
       // If this player is the storyteller, pick the next one
-      if (p === storyteller) {
+      if (p.id === storyteller.id) {
         newStoryteller = (i === players.length - 1) ?
           players[0] : players[i + 1];
       }
