@@ -11,7 +11,7 @@ class CardManager {
     let id = 0;
     let files = fs.readdirSync('public/cards');
     for (let f of files) {
-      if (/^card-\d+\.jpg$/.test(f)) {
+      if (/^card-.+\.(jpg|jpeg|png)$/.test(f)) {
         this.cards.push({id: ++id, url: `cards/${f}`});
       }
     }
