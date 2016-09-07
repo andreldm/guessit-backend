@@ -41,8 +41,8 @@ class CardManager {
     let newCard = this.available.splice(this.index++, 1)[0];
     this.used.push(newCard);
 
-    let index = this.used.indexOf(usedCard);
-    this.used.splice(index, 1);
+    let index = _.findIndex(this.used, {'id': usedCard});
+    usedCard = this.used.splice(index, 1)[0];
     this.available.push(usedCard);
 
     return newCard;
