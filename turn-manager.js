@@ -56,6 +56,14 @@ class TurnManager {
         return {id: p.id, name: p.name, color: p.color, score: p.score}
       }));
 
+      // check match winner
+      let winner = _.orderBy(players, ['score'], ['desc'])[0];
+      if (winner.score >= 30) {
+        console.log(`Game Over, winner: ${winner.name}`);
+        io.emit('gameover', winner);
+        return;
+      }
+
       // pick next storyteller
       this.playerManager.nextStoryteller(io);
     }

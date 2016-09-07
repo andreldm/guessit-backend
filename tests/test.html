@@ -12,6 +12,7 @@
     <button onclick="join()">Join</button>
     <div id="cards"></div>
     <div id="bets"></div>
+    <div id="winner"></div>
     <ul id="players"></ul>
 
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
@@ -74,6 +75,13 @@
           var b = $('<button onclick="bet(' + card.id + ')">' + card.id + '</button>');
           $("#bets").append(b);
         }
+      });
+
+      socket.on('gameover', function(winner) {
+        console.log('gameover');
+        $("#bets").empty();
+        $("#cards").empty();
+        $("#winner").html("The winner is: " + winner.name + " (" + winner.score + ")");
       });
     </script>
   </body>
