@@ -57,8 +57,10 @@
         $("#bets").empty();
         $("#cards").empty();
         for (card of deck) {
-          var b = $('<button disabled="disabled" onclick="select(' + card.id + ')">' + card.id + '</button>');
-          $("#cards").append(b);
+          var b = $('<button disabled="disabled" onclick="select(' + card.id + ')"/>');
+          var img = $('<img src="../public/' + card.url + '" width="48" height="72"/>');
+          var legend = $('<div>' + card.id + '</div>');
+          $("#cards").append(b.append(img).append(legend));
         }
       });
 
@@ -72,8 +74,10 @@
 
         $("#bets").empty();
         for (card of bets) {
-          var b = $('<button onclick="bet(' + card.id + ')">' + card.id + '</button>');
-          $("#bets").append(b);
+          var b = $('<button onclick="bet(' + card.id + ')"/>');
+          var img = $('<img src="../public/' + card.url + '" width="48" height="72"/>');
+          var legend = $('<div>' + card.id + '</div>');
+          $("#bets").append(b.append(img).append(legend));
         }
       });
 
