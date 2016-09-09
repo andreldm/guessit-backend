@@ -4,7 +4,6 @@ let _ = require('lodash');
 class CardManager {
   constructor() {
     this.cards = [];
-    this.used = [];
     this.available = [];
     this.index = 0;
 
@@ -26,7 +25,6 @@ class CardManager {
     }
 
     let deck = this.available.splice(this.index, 6);
-    Array.prototype.push.apply(this.used, deck);
     this.index += 6;
 
     return deck;
@@ -39,11 +37,7 @@ class CardManager {
     }
 
     let newCard = this.available.splice(this.index++, 1)[0];
-    this.used.push(newCard);
-
-    let index = _.findIndex(this.used, {'id': usedCard});
-    usedCard = this.used.splice(index, 1)[0];
-    this.available.push(usedCard);
+    this.available.push(this.getCard(usedCard));
 
     return newCard;
   }
@@ -53,7 +47,6 @@ class CardManager {
   }
 
   reset() {
-    this.used = [];
     this.available = _.shuffle(this.cards.slice());
   }
 }
