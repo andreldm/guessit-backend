@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node spec/support/jasmine-runner.js"
   },
   "author": "",
   "license": "ISC",
@@ -13,5 +13,9 @@
     "express": "^4.14.0",
     "lodash": "^4.15.0",
     "socket.io": "^1.4.8"
+  },
+  "devDependencies": {
+    "jasmine": "^2.5.1",
+    "jasmine-spec-reporter": "^2.7.0"
   }
 }
