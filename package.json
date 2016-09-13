@@ -1,5 +1,5 @@
 {
-  "name": "gambit",
+  "name": "guessit-backend",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -8,7 +8,7 @@
     "test": "node spec/support/jasmine-runner.js"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.14.0",
     "lodash": "^4.15.0",
