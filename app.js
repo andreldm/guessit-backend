@@ -27,6 +27,7 @@ app.get('/reset', function (req, res) {
 io.on('connection', function(socket){
   socket.on('join', function(playerName) { playerManager.handleJoin(io, socket, playerName); });
   socket.on('disconnect', function () { playerManager.handleDisconnect(io, socket); });
+  socket.on('reconnect-player',(playerId,playerName)=>{ playerManager.handleReconnect(io, socket, playerId, playerName); }); 
   socket.on('pick-card', function(cardId) { turnManager.handlePickCard(io, socket, cardId); });
   socket.on('pick-bet', function(cardId) { turnManager.handlePickBet(io, socket, cardId); });
 });
