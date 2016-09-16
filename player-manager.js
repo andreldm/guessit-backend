@@ -56,12 +56,42 @@ class PlayerManager {
     let player = this.players.get(socket.id);
     if (player) {
       console.log(`${player.name} has disconnected`);
-      this.players.delete(socket.id);
+      //this.players.delete(socket.id);
     }
 
     io.emit('update-all', Array.from(this.players.values()).map(p => {
       return {id: p.id, name: p.name, color: p.color, score: p.score}
     }));
+  }
+
+  handleReconnect(io, socket, playerId,playerName){
+    if(this.players){
+      let playerReconnect = this.players.get(playerId);
+      if(playerReconnect && playerReconnect.id!==socket.id){
+          console.log(`${playerName} has reconnected`);
+          playerReconnect.id = socket.id;
+          let playerCopy = Object.assign({},playerReconnect);
+          this.players.set(playerReconnect.id,playerCopy);
+          this.players.delete(playerId);
+          io.to(playerCopy.id).emit('update', playerCopy);
+
+          //check if player is storyteller and emit storyteller event
+          if(this.storyteller && this.storyteller.id===playerReconnect.id){
+            this.storyteller = playerCopy;
+            io.to(this.storyteller.id).emit('allow-pick-card');
+          }
+          //@TODO check if player is in bet and emit event
+
+          //update all
+          io.emit('update-all', Array.from(this.players.values()).map(p => {
+            return {id: p.id, name: p.name, color: p.color, score: p.score}
+          }));
+
+      }else{
+          //is a new game
+          this.handleJoin(io, socket, playerName);
+      }       
+    }   
   }
 
   nextStoryteller(io) {
