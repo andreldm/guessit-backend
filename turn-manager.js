@@ -1,12 +1,20 @@
 let _ = require('lodash');
+let PubSub = require('pubsub-js');
 
 class TurnManager {
-  constructor(cardManager, playerManager) {
-    this.cardManager = cardManager
+  constructor(io, cardManager, playerManager) {
+    this.io = io;
+    this.cardManager = cardManager;
     this.playerManager = playerManager;
+    this.state = 's'; // 's' -> Storyteller picking, 'p' everybody Picking, 'b' everybody Betting
+    PubSub.subscribe('PLAYER-DISCONNECTED', () => {
+        if (this.state === 's') this.checkLeftBets();
+        else if (this.state === 'p') this.checkLeftPicks();
+        else if (this.state === 'b') this.checkLeftBets();
+    });
   }
 
-  handlePickCard(io, socket, cardId) {
+  handlePickCard(socket, cardId) {
     let player = this.playerManager.players.get(socket.id);
     player.pickedCard = cardId;
 
@@ -17,55 +25,70 @@ class TurnManager {
     // Let others players pick cards
     if (this.playerManager.storyteller.id === player.id) {
       console.log("Allow other players to pick cards");
+      PubSub.publish('CLOSE-MATCH');
+      this.state = 'p';
 
       for (let p of players) {
         if (p.id === player.id) continue;
-        io.to(p.id).emit('allow-pick-card');
+        this.io.to(p.id).emit('allow-pick-card');
       }
     }
 
-    // Check if no one is left to picking cards
-    let left = players.filter(p => !p.pickedCard).length;
-    if (left === 0) {
-      let pickedCards = players.map(p => this.cardManager.getCard(p.pickedCard));
-
-      for (let p of players) {
-        if (p.id !== this.playerManager.storyteller.id) {
-          io.to(p.id).emit('allow-pick-bet', _.shuffle(pickedCards));
-        }
-      }
-
-      console.log("Everybody is now picking bets");
-    }
+    this.checkLeftPicks();
   }
 
-  handlePickBet(io, socket, cardId) {
+  handlePickBet(socket, cardId) {
     let player = this.playerManager.players.get(socket.id);
     player.pickedBet = cardId;
     console.log(`${player.name} has picked bet ${cardId}`);
 
-    // Check if no one is left picking bets
+    this.checkLeftBets();
+  }
+
+  // Check if no one is left to picking cards
+  checkLeftPicks () {
+    let players = Array.from(this.playerManager.players.values());
+    let left = players.filter(p => !p.pickedCard).length;
+    if (left === 0) {
+      console.log("Everybody is now picking bets");
+      this.state = 'b';
+
+      let pickedCards = players.map(p => this.cardManager.getCard(p.pickedCard));
+
+      for (let p of players) {
+        if (p.id !== this.playerManager.storyteller.id) {
+          this.io.to(p.id).emit('allow-pick-bet', _.shuffle(pickedCards));
+        }
+      }
+    }
+  }
+
+  // Check if no one is left picking bets
+  checkLeftBets() {
     let players = Array.from(this.playerManager.players.values());
 
     let left = players.filter(p => !p.pickedBet).length;
     if (left === 1) { // 1 because the storyteller doesn't pick a bet
       console.log("Processing results...");
+      PubSub.publish('OPEN-MATCH');
+
       this.processBets();
-      io.emit('update-all', Array.from(this.playerManager.players.values())
+      this.io.emit('update-all', Array.from(this.playerManager.players.values())
       .map(p => {
         return {id: p.id, name: p.name, color: p.color, score: p.score}
       }));
 
       // check match winner
-      let winner = _.orderBy(players, ['score'], ['desc'])[0];
-      if (winner.score >= 30) {
-        console.log(`Game Over, winner: ${winner.name}`);
-        io.emit('gameover', winner);
+      let bestScore = _.orderBy(players, ['score'], ['desc'])[0].score;
+      if (bestScore >= 30) {
+        console.log("Game Over");
+        this.io.emit('gameover', players);
         return;
       }
 
       // pick next storyteller
-      this.playerManager.nextStoryteller(io);
+      PubSub.publish('NEXT-STORYTELLER');
+      this.state = 's';
     }
   }
 

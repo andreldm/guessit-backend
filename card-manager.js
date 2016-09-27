@@ -42,6 +42,12 @@ class CardManager {
     return newCard;
   }
 
+  returnCards(cards) {
+    for (let card of cards) {
+      this.available.push(this.getCard(card.id));
+    }
+  }
+
   getCard(cardId) {
     return this.cards[cardId - 1];
   }

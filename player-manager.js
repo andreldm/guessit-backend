@@ -1,11 +1,22 @@
-let rcolor = require('./rcolor');
 let _ = require('lodash');
+let PubSub = require('pubsub-js');
+let rcolor = require('./rcolor');
 
 class PlayerManager {
-  constructor(cardManager) {
+  constructor(io, cardManager) {
+    this.io = io;
     this._players = new Map();
     this._storyteller = undefined;
     this.cardManager = cardManager;
+    this.disconnected = new Map();
+    this.awaiting = [];
+    this.matchOpen = true; // open to new players or reconnections
+    PubSub.subscribe('OPEN-MATCH', () => {
+      this.matchOpen = true;
+      this.flushAwaitingPlayers();
+    });
+    PubSub.subscribe('CLOSE-MATCH', () => this.matchOpen = false);
+    PubSub.subscribe('NEXT-STORYTELLER', () => this.nextStoryteller());
   }
 
   get players() { return this._players; }
@@ -13,7 +24,7 @@ class PlayerManager {
   get storyteller() { return this._storyteller; }
   set storyteller(player) { this._storyteller = player; }
 
-  handleJoin (io, socket, playerName) {
+  handleJoin (socket, playerName) {
     if (!playerName || !playerName.trim()) {
       console.log("Invalid player name");
       return;
@@ -26,47 +37,77 @@ class PlayerManager {
       return;
     }
 
-    player = {
-      id: socket.id,
-      name: playerName,
-      color: rcolor(),
-      score: 0,
-      deck: this.cardManager.getDeck(),
-      pickedCard: undefined,
-      pickedBet: undefined
+    player = this.disconnected.get(playerName);
+    if (player) {
+      this.disconnected.delete(player.name);
+      player.id = socket.id;
+    } else {
+      player = {
+        id: socket.id,
+        name: playerName,
+        color: rcolor(),
+        score: 0,
+        deck: this.cardManager.getDeck(),
+        pickedCard: undefined,
+        pickedBet: undefined
+      }
     }
+
+    if (!this.matchOpen) {
+      console.log(`${playerName} has already joined, but is awaiting the next turn...`);
+      this.io.to(player.id).emit('waiting', player);
+      this.awaiting.push(player);
+      return;
+    }
+
     this.players.set(socket.id, player);
+    this.publishPlayer(player);
+  }
 
-    console.log(`${playerName} has joined`);
+  flushAwaitingPlayers() {
+    for (let player of this.awaiting) {
+      console.log(`${player.name} is now joining`);
+      this.publishPlayer(player);
+    }
 
-    io.emit('update-all', Array.from(this.players.values()).map(p => {
+    this.awaiting = [];
+  }
+
+  publishPlayer(player) {
+    console.log(`${player.name} has joined`);
+
+    this.io.emit('update-all', Array.from(this.players.values()).map(p => {
       return {id: p.id, name: p.name, color: p.color, score: p.score}
     }));
 
-    io.to(player.id).emit('update', player);
+    this.io.to(player.id).emit('update', player);
 
     if (!this.storyteller || this.storyteller.name === player.name) {
       this.storyteller = player;
-      io.to(player.id).emit('allow-pick-card');
-      console.log(`${playerName} is now picking a card`);
+      this.io.to(player.id).emit('allow-pick-card');
+      console.log(`${player.name} is now picking a card`);
     }
   }
 
-  handleDisconnect (io, socket) {
+  handleDisconnect (socket) {
     let player = this.players.get(socket.id);
     if (player) {
       console.log(`${player.name} has disconnected`);
       this.players.delete(socket.id);
-    }
+      this.disconnected.set(player.name, player);
+      this.cardManager.returnCards(player.deck);
 
-    io.emit('update-all', Array.from(this.players.values()).map(p => {
-      return {id: p.id, name: p.name, color: p.color, score: p.score}
-    }));
+      PubSub.publish('PLAYER-DISCONNECTED', player);
+
+      this.io.emit('update-all', Array.from(this.players.values()).map(p => {
+        return {id: p.id, name: p.name, color: p.color, score: p.score}
+      }));
+    }
   }
 
-  nextStoryteller(io) {
-    let newStoryteller = undefined;
+  nextStoryteller() {
     let storyteller = this.storyteller;
+    let newStoryteller = undefined;
     let players = Array.from(this.players.values());
 
     for (let i = 0; i < players.length; i++) {
@@ -86,16 +127,20 @@ class PlayerManager {
           players[0] : players[i + 1];
       }
 
-      io.to(p.id).emit('update', p);
+      this.io.to(p.id).emit('update', p);
     }
 
     this.storyteller = newStoryteller;
-    io.to(this.storyteller.id).emit('allow-pick-card');
+    this.io.to(this.storyteller.id).emit('allow-pick-card');
+    console.log(`${newStoryteller.name} is now the storyteller`);
   }
 
   reset() {
     this.players = new Map();
     this.storyteller = undefined;
+    this.disconnected = new Map();
+    this.awaiting = [];
+    this.matchOpen = true;
   }
 }
 
