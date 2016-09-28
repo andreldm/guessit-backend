@@ -11,11 +11,11 @@ class CardStore{
 	constructor(){
 		this.cards = [];
 		fs.readdir('public/cards',(err:any,files:string[])=>{
-		    for (let f of files) {
-		      if (/^.+\.(jpg|jpeg|png)$/.test(f)) {
-		        this.cards.push({id:this.cards.length, url: `cards/${f}`,status:ECardStatus.FREE});
-		      }
-		    }
+			this.cards = files
+				.filter(f=> f.indexOf('card-') > -1)
+				.map((f, indx) => {
+					return { id: indx + 1, url: `cards/${f}`, status: ECardStatus.FREE }
+				});
 		    this.onChange.emit(null);
 		});
 	}
