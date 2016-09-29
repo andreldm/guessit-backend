@@ -1,5 +1,5 @@
-import {ICard} from "./i-card";
-import {ECardStatus} from "./e-card";
+import {ICard} from "../interfaces/i-card";
+import {ECardStatus} from "../interfaces/e-card";
 import {EventEmitter} from "event-emitter-lite";
 import fs = require('fs');
 

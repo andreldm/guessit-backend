@@ -1,10 +1,10 @@
 import {EventEmitter} from "event-emitter-lite";
 import cardStore from "../card/card-store";
 import playerStore from "../player/player-store";
-import {EPlayerStatus} from "../player/e-player";
-import {IPlayer} from "../player/i-player";
-import {ICard} from "../card/i-card";
-import {IBet} from "./i-party-manager";
+import {EPlayerStatus} from "../interfaces/e-player";
+import {IPlayer} from "../interfaces/i-player";
+import {ICard} from "../interfaces/i-card";
+import {IBet} from "../interfaces/i-bet";
 
 class PartyManager{
 	public onReady:EventEmitter<boolean> = new EventEmitter();
@@ -249,7 +249,7 @@ class PartyManager{
 				id:indx
 				,player:player
 				,card:cardStore.getById(player.pickedCard)
-				,vitims:playerStore
+				,voters:playerStore
 					.get()
 					.filter(vitim_player=>vitim_player.pickedBet===player.pickedCard)			
 			};

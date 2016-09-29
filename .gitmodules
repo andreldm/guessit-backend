@@ -1,3 +1,6 @@
 [submodule "frontend"]
 	path = frontend
 	url = git@github.com:alexsad/guessit-frontend.git
+[submodule "src/interfaces"]
+	path = src/interfaces
+	url = https://github.com/alexsad/guess-it-interfaces
