@@ -1,19 +1,12 @@
-#Guess-it game example project
-###A simple game!
+#Guess-it Backend
+###A simple multiplayer game!
 
-####install
-#####npm install
+## Install
+`npm install`
 
-####tasks
-#####npm run watch 
-transpiller files from typescript to es5 using commonjs.
-#####./node_module/.bin/nodemon -w ./dist ./app.js
-to reload app.js when any file is changed.
-#####./node_module/.bin/nodemon -w ./dist ./dist/test/test.js
-to test with reload when any file is changed.
+# Tasks
+`npm run watch` transpiller files from typescript to es5 using commonjs.
 
-#### Browser Support
+`./node_module/.bin/nodemon -w ./dist ./app.js` to reload app.js when any file is changed.
 
-![IE](https://raw.github.com/alrra/browser-logos/master/internet-explorer/internet-explorer_48x48.png) | 
---- |
-only 7 ✔ |
+`./node_module/.bin/nodemon -w ./dist ./dist/test/test.js` to test with reload when any file is changed.
