@@ -4,12 +4,14 @@ import playerStore from "../player/player-store";
 import {EPlayerStatus} from "../player/e-player";
 import {IPlayer} from "../player/i-player";
 import {ICard} from "../card/i-card";
+import {IBet} from "./i-party-manager";
 
 class PartyManager{
 	public onReady:EventEmitter<boolean> = new EventEmitter();
 	public onUpdate:EventEmitter<any>=new EventEmitter();
 	public onCardsBet:EventEmitter<ICard[]>=new EventEmitter();
 	public onGameOver: EventEmitter<IPlayer> = new EventEmitter();
+	public onBetsReveled: EventEmitter<IBet[]> = new EventEmitter();
 	public storytellerId:string;
 	private cardsInBet:ICard[];
 	constructor(){
@@ -77,7 +79,7 @@ class PartyManager{
 						nextIndex=indx+1;
 						return p.id===this.storytellerId;
 					});
-				if(nextIndex===playerStore.get().length-1){
+				if(nextIndex===playerStore.get().length){
 					nextIndex=0;
 				};
 				this.storytellerId = playerStore.get()[nextIndex].id;
@@ -102,13 +104,14 @@ class PartyManager{
 	//trolando
 	public discardCard(playerId:string,cardId:number):void{
 		let player = playerStore.getById(playerId);
+		let allPlayerDiscarded: boolean = false;
 		if(player.status===EPlayerStatus.DISCARDING){			
 		    player.pickedCard = cardId;
 		    console.log(`${player.name} has discard card ${cardId}`);
 		    player.status = EPlayerStatus.WAITING;
 		    this.doDiscard(cardId,player);
 
-			let allPlayerDiscarded: boolean = playerStore
+			allPlayerDiscarded = playerStore
 				.get()
 				.filter(playerDiscarding => playerDiscarding.id !== this.storytellerId)
 				.every(playerDiscarding => playerDiscarding.status === EPlayerStatus.WAITING);
@@ -126,10 +129,13 @@ class PartyManager{
 		    			betCards.push(playerReady.pickedCard);
 		    		});
 		    	this.cardsInBet = this.shuffleCards(cardStore.get().filter((card)=> betCards.indexOf(card.id) > -1 ));
-		    	this.onCardsBet.emit(this.cardsInBet);
+		    	
 		    }
 	    }
 		this.onUpdate.emit(null);
+		if(allPlayerDiscarded){
+			this.onCardsBet.emit(this.cardsInBet);
+		}		
 	}
 	private shuffleCards(cards:ICard[]):ICard[] {
 	    for (var i = cards.length - 1; i > 0; i--) {
@@ -232,6 +238,23 @@ class PartyManager{
 	      	 p.score +=3;
 	      });       
 	    }
+
+	    this.processBetPanel();
+
+  }
+  private processBetPanel():void{
+  		this.onBetsReveled.emit(
+  		playerStore.get().map((player,indx)=>{
+			return {
+				id:indx
+				,player:player
+				,card:cardStore.getById(player.pickedCard)
+				,vitims:playerStore
+					.get()
+					.filter(vitim_player=>vitim_player.pickedBet===player.pickedCard)			
+			};
+		})
+		);
   }
 }
 
