@@ -1,7 +1,7 @@
-import {IPlayer} from "./i-player";
-import {EPlayerStatus} from "./e-player";
-import {ICard} from "../card/i-card";
-import {ECardStatus} from "./card/e-card";
+import {IPlayer} from "../interfaces/i-player";
+import {EPlayerStatus} from "../interfaces/e-player";
+import {ICard} from "../interfaces/i-card";
+import {ECardStatus} from "../interfaces/e-card";
 import cardStore from "../card/card-store";
 import {EventEmitter} from "event-emitter-lite";
 
