@@ -4,10 +4,11 @@
   "description": "",
   "main": false,
   "scripts": {
-    "jspm": "./node_modules/.bin/jspm",
-    "gulp": "./node_modules/.bin/gulp",
     "watch": "gulp watch",
-    "compile": "gulp compile"
+    "compile": "gulp compile",
+    "start": "nodemon -w ./dist ./app.js",
+    "test": "nodemon -w ./dist ./dist/test/test.js",
+    "make-frontend": "cd frontend && npm install && gulp compile && cp -R index.html config.js dist jspm_packages ../public"
   },
   "author": "ferrugemjs",
   "license": "ISC",

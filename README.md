@@ -1,12 +1,21 @@
-#Guess-it Backend
-###A simple multiplayer game!
+# Guess-it Backend
+### A simple multiplayer card game!
 
 ## Install
-`npm install`
+```
+npm install
+```
 
-# Tasks
-`npm run watch` transpiller files from typescript to es5 using commonjs.
+## Frontend
+```
+git submodule init
+git submodule update
+npm run make-frontend
+```
 
-`./node_module/.bin/nodemon -w ./dist ./app.js` to reload app.js when any file is changed.
-
-`./node_module/.bin/nodemon -w ./dist ./dist/test/test.js` to test with reload when any file is changed.
+## Tasks
+```
+npm run watch # transpile files from typescript to es5 using commonjs.
+npm start # run app.js and reload it when any file is changed.
+npm test # run test.js and reload it when any file is changed.
+```
