@@ -197,48 +197,43 @@ class PartyManager{
 	}
 	private processBets() {
 	    let storyteller =  playerStore.getById(this.storytellerId);
-	    let playerByCard = {};
-	    let winners:IPlayer[] = [];
-	    playerStore.get().forEach((p)=>{
-	    	//console.log(p.pickedCard);
-			playerByCard[p.pickedCard]=p;
-	    });
-
-	    //console.log(storyteller)
-
-	    playerStore.get().forEach((p1)=>{
-	      if (p1.id !== this.storytellerId){
-		      let p2 = playerByCard[p1.pickedBet];
-		      //console.log(p2);
-		      if (p2){
-			      if (p2.id === this.storytellerId){
-			      	winners.push(p1);
-			      }else if (p1.id !== p2.id){
-			      	// ignore voting on own card
-			      	p2.score++
-			      };
-		      };
-	      }
-
-	    });
+	    let players:IPlayer[] = [];
 	    /*
 	     * If nobody or everybody finds the correct picture, the storyteller scores
 	     * 0, and each of the other players scores 2. Otherwise the storyteller and
 	     * all players who found the correct answer score 3
 	     */
-	    if (winners.length === 0 || winners.length === (playerStore.get().length - 1)) {
-	      playerStore.get().forEach((p)=>{
-	        if (p === storyteller){
-	        	p.score += 2;
-	        };	        
-	      });
-	    }else{
-	      storyteller.score += 3;
-	      winners.forEach((p)=>{
-	      	 p.score +=3;
-	      });       
-	    }
+	    let playersVoters:IPlayer[] = playerStore
+	     	.get()
+	     	.filter(p=> p.id !== this.storytellerId);
 
+	    let allVotersInStoryteller:boolean = playersVoters
+	     	.every(p=>p.pickedBet===storyteller.pickedCard);
+
+	    let noVotersInStoryteller:boolean = playersVoters
+	     	.every(p=>p.pickedBet!==storyteller.pickedCard);
+
+	    if(allVotersInStoryteller){
+	    	//todos acertaram - narrador foi muito obvio
+	    	playersVoters.forEach(p=>p.score+=2);
+	    }else if(noVotersInStoryteller){
+	    	//ninguem acertou - narrador foi muito vago
+	    	playersVoters.forEach(p=>p.score+=2);
+
+	    }else{
+	    	//o storyteller e todos que acertaram ganham 3 pontos
+	    	storyteller.score+=3;
+	    	playersVoters
+	    		.filter(p=>p.pickedBet===storyteller.pickedCard)
+	    		.forEach(p=>p.score+=3);
+	    }
+	    //dar pontuacoes ao playes pelas armadilhas
+	    playersVoters
+	    	.forEach((p)=>{
+	    		playersVoters
+	    			.filter( p2=>p2.id!==p.id && p2.pickedBet === p.pickedCard)
+	    			.forEach(()=>p.score++);
+	    	});
 	    this.processBetPanel();
 
   }
