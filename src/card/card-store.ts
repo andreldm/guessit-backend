@@ -1,9 +1,7 @@
 import {ICard} from "../interfaces/i-card";
 import {ECardStatus} from "../interfaces/e-card";
 import {EventEmitter} from "event-emitter-lite";
-import fs = require('fs');
-
-
+import * as fs from 'fs';
 
 class CardStore{
 	private cards:ICard[];
@@ -16,14 +14,14 @@ class CardStore{
 				.map((f, indx) => {
 					return { id: indx + 1, url: `cards/${f}`, status: ECardStatus.FREE }
 				});
-			//console.log(this.cards);	
+			//console.log(this.cards);
 		    this.onChange.emit(null);
 		});
 	}
 	public getNewCard():ICard{
 		let freeCards:ICard[] = this.cards
 				.filter((card)=>card.status===ECardStatus.FREE);
-		let randomIndx:number =	Math.floor((Math.random() * freeCards.length));	
+		let randomIndx:number =	Math.floor((Math.random() * freeCards.length));
 		freeCards[randomIndx].status = ECardStatus.USED;
 		return freeCards[randomIndx];
 	}
@@ -55,7 +53,7 @@ class CardStore{
 		let myRandomCards:ICard[] = [];
 		for(let i=0;i<6;i++){
 			myRandomCards.push(this.getNewCard());
-		}		
+		}
 		return myRandomCards;
 	}
 }
