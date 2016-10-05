@@ -5,8 +5,8 @@
   "main": false,
   "scripts": {
     "compile": "tsc",
-    "watch": "tsc -w & nodemon -w dist app.js",
-    "start": "nodemon -w dist app.js",
+    "watch": "tsc -w & nodemon -w dist dist/app.js",
+    "start": "nodemon -w dist dist/app.js",
     "test": "nodemon -w dist dist/test/test.js",
     "make-frontend": "cd frontend && npm install && gulp compile && cp -R index.html config.js dist jspm_packages ../public"
   },

@@ -15,5 +15,11 @@
     "src/**/*.ts",
     "custom_typings/*.d.ts"
   ],
+  "exlcude": [
+    "node_modules",
+    "frontend",
+    "dist",
+    "public"
+  ],
   "compileOnSave": false
 }
