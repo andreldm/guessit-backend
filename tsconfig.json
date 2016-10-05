@@ -15,7 +15,7 @@
     "src/**/*.ts",
     "custom_typings/*.d.ts"
   ],
-  "exlcude": [
+  "exclude": [
     "node_modules",
     "frontend",
     "dist",

@@ -41,8 +41,8 @@ io.on('connection', (socket) => {
       name: playerName
     });
   });
-  //socket.on('disconnect', function () { playerManager.handleDisconnect(io, socket); });
-  //socket.on('reconnect-player',(playerId,playerName)=>{ playerManager.handleReconnect(io, socket, playerId, playerName); });
+  // socket.on('disconnect', function () { playerManager.handleDisconnect(io, socket); });
+  // socket.on('reconnect-player',(playerId,playerName)=>{ playerManager.handleReconnect(io, socket, playerId, playerName); });
   socket.on('pick-card', (playerId: string, cardId: number) => {
     partyManager.default.pickCard(playerId, cardId);
 
