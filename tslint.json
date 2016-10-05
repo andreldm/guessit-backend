@@ -9,6 +9,7 @@
     "member-access": false,
     "typedef-whitespace": false,
     "interface-name": false,
-    "max-line-length": [true, 150]
+    "max-line-length": [true, 150],
+    "no-console": false
   }
 }
