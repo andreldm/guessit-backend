@@ -1,20 +1,19 @@
 {
-    "compilerOptions": {
-        "target": "es5"
-        ,"module": "commonJS"
-        ,"moduleResolution": "classic"
-        ,"outDir": "./dist"
-        ,"experimentalDecorators": true
-        ,"noImplicitAny":true		
-        ,"sourceMap": false        
-		,"declaration": false
-		,"removeComments":true
-		,"noEmitHelpers":true 
-		,"suppressImplicitAnyIndexErrors": true
-    },
-    "exclude": [
-        "node_modules"
-		,"dist"
-    ],
-    "compileOnSave": false
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+
+    "experimentalDecorators": true,
+    "noImplicitAny": true,
+    "sourceMap": false,
+    "lib": ["es6"],
+    "types": ["node", "express", "socket.io"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "custom_typings/*.d.ts"
+  ],
+  "compileOnSave": false
 }

@@ -23,24 +23,26 @@ class PartyManager{
 
 	}
 
-	public renamePlayer(player:IPlayer):void{
+	public renamePlayer(player:{name: string, id: string}):void{
 		console.log(`player ${player.id} has renamed to ${player.name}!`);
 		let playerFromStore:IPlayer = playerStore.getById(player.id);
 		playerFromStore.name = player.name;
 	}
 
-	public join(player:IPlayer):void{
-		player.color = "";
-		player.deck = [];
-		player.status = EPlayerStatus.WAITING;
-		player.score = 0;
+	public join(p: {name: string, id: string}):void{
+		let player:IPlayer = Object.assign({}, p, {
+			color: '',
+			deck: [],
+			status: EPlayerStatus.WAITING,
+			score: 0
+		});
 
 		if(playerStore.get().length===0){
 			player.status = EPlayerStatus.PICKING;
 			this.storytellerId = player.id;
 		}
 
-		playerStore.add(player); 	
+		playerStore.add(player);
 
 		console.log(`player ${player.name} has connected!`);
 		this.onUpdate.emit(null);
@@ -86,7 +88,7 @@ class PartyManager{
 				let nexStoryTeller = playerStore.getById(this.storytellerId);
 				nexStoryTeller.status = EPlayerStatus.PICKING;
 				console.log(`next storyteller ${nexStoryTeller.name}`);
-				
+
 				playerStore.get().forEach((p)=>{
 					p.deck.push(cardStore.getNewCard());
 				});
@@ -105,7 +107,7 @@ class PartyManager{
 	public discardCard(playerId:string,cardId:number):void{
 		let player = playerStore.getById(playerId);
 		let allPlayerDiscarded: boolean = false;
-		if(player.status===EPlayerStatus.DISCARDING){			
+		if(player.status===EPlayerStatus.DISCARDING){
 		    player.pickedCard = cardId;
 		    console.log(`${player.name} has discard card ${cardId}`);
 		    player.status = EPlayerStatus.WAITING;
@@ -125,17 +127,17 @@ class PartyManager{
 		    		.forEach((playerReady)=>{
 		    			if(playerReady.id!==this.storytellerId){
 		    				playerReady.status=EPlayerStatus.BETING;
-		    			};	    			
+		    			};
 		    			betCards.push(playerReady.pickedCard);
 		    		});
 		    	this.cardsInBet = this.shuffleCards(cardStore.get().filter((card)=> betCards.indexOf(card.id) > -1 ));
-		    	
+
 		    }
 	    }
 		this.onUpdate.emit(null);
 		if(allPlayerDiscarded){
 			this.onCardsBet.emit(this.cardsInBet);
-		}		
+		}
 	}
 	private shuffleCards(cards:ICard[]):ICard[] {
 	    for (var i = cards.length - 1; i > 0; i--) {
@@ -246,7 +248,7 @@ class PartyManager{
 				,card:cardStore.getById(player.pickedCard)
 				,voters:playerStore
 					.get()
-					.filter(vitim_player=>vitim_player.pickedBet===player.pickedCard)			
+					.filter(vitim_player=>vitim_player.pickedBet===player.pickedCard)
 			};
 		})
 		);
