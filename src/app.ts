@@ -1,12 +1,12 @@
-let express = require('express');
-let http = require('http');
-let socketio = require('socket.io');
+import * as express from "express";
+import * as http from "http";
+import * as socketio from "socket.io";
 
-let partyManager = require("./dist/party/party-manager");
-let playerStore = require("./dist/player/player-store");
+import * as partyManager from "./party/party-manager";
+import * as playerStore from "./player/player-store";
 
 let app = express();
-let server = http.Server(app);
+let server = (<any>http).Server(app);
 let io = socketio(server);
 
 app.set('port', process.env.PORT || 3000);
@@ -35,7 +35,7 @@ partyManager.default.onBetsReveled.subscribe(bets => {
 });
 
 io.on('connection', (socket) => {
-  socket.on('join', (playerId, playerName) => {
+  socket.on('join', (playerId: string, playerName: string) => {
     partyManager.default.join({
       id: playerId,
       name: playerName
@@ -43,16 +43,17 @@ io.on('connection', (socket) => {
   });
   //socket.on('disconnect', function () { playerManager.handleDisconnect(io, socket); });
   //socket.on('reconnect-player',(playerId,playerName)=>{ playerManager.handleReconnect(io, socket, playerId, playerName); });
-  socket.on('pick-card', (playerId, cardId) => {
+  socket.on('pick-card', (playerId: string, cardId: number) => {
     partyManager.default.pickCard(playerId, cardId);
+
   });
-  socket.on('pick-bet', (playerId, cardId) => {
+  socket.on('pick-bet', (playerId: string, cardId: number) => {
     partyManager.default.betCard(playerId, cardId);
   });
-  socket.on('discard-card', (playerId, cardId) => {
+  socket.on('discard-card', (playerId: string, cardId: number) => {
     partyManager.default.discardCard(playerId, cardId);
   });
-  socket.on('rename-player', (playerId, newName) => {
+  socket.on('rename-player', (playerId: string, newName: string) => {
     partyManager.default.renamePlayer({
       id: playerId,
       name: newName
