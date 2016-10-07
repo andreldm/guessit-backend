@@ -9,8 +9,9 @@ npm install
 ## Frontend
 ```bash
 git submodule init
-git submodule update
-npm run make-frontend
+git submodule update --recursive
+cd frontend && git submodule init && git submodule update
+cd .. && npm run make-frontend
 ```
 
 ## Tasks
